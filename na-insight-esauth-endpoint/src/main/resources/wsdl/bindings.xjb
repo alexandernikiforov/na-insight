@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+               xmlns:ns0="http://soap.esauth.nevis.ch/xsd"
+               xmlns:ns1="http://soap.esauth.nevis.ch"
+               version="2.1">
+
+    <jaxb:bindings xmlns:ns0="http://soap.esauth.nevis.ch/xsd" scd="x-schema::ns0">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.alni.insight.esauth.type"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings xmlns:ns0="http://soap.esauth.nevis.ch" scd="x-schema::ns0">
+        <jaxb:schemaBindings>
+            <jaxb:package name="ch.alni.insight.esauth.protocol"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+</jaxb:bindings>

@@ -1,0 +1,387 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ns0="http://soap.esauth.nevis.ch/xsd"
+           targetNamespace="http://soap.esauth.nevis.ch"
+           attributeFormDefault="qualified"
+           elementFormDefault="qualified">
+
+    <xs:import namespace="http://soap.esauth.nevis.ch/xsd"/>
+
+    <xs:element name="vote">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="voteResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Boolean" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="authenticate">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="InArgs" type="ns0:Property"/>
+                <xs:element minOccurs="0" name="AuthLoginContext" type="ns0:AuthLoginContext"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="authenticateResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="AuthResultContext" type="ns0:AuthResultContext"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="refresh">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Sectoken" type="xs:string"/>
+                <xs:element minOccurs="0" name="Resource" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="refreshResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="AuthResultContext" type="ns0:AuthResultContext"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="stepdown">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="AuthChangeContext" type="ns0:AuthChangeContext"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="stepdownResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="AuthResultContext" type="ns0:AuthResultContext"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="stepup">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="InArgs" type="ns0:Property"/>
+                <xs:element minOccurs="0" name="AuthChangeContext" type="ns0:AuthChangeContext"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="stepupResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="AuthResultContext" type="ns0:AuthResultContext"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="unlock">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="InArgs" type="ns0:Property"/>
+                <xs:element minOccurs="0" name="AuthChangeContext" type="ns0:AuthChangeContext"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="unlockResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="AuthResultContext" type="ns0:AuthResultContext"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="logout">
+        <xs:complexType>
+            <xs:sequence>
+                <!-- leave for backward compatibility -->
+                <xs:element minOccurs="0" name="Sectoken" type="xs:string"/>
+                <!-- new to allow full context propagation by proxy -->
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="InArgs" type="ns0:Property"/>
+                <xs:element minOccurs="0" name="AuthChangeContext" type="ns0:AuthChangeContext"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="logoutResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="GuiDesc" type="ns0:GuiDesc"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="poll_terminated_sessions">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="MinPollPeriod" type="xs:int"/>
+                <xs:element minOccurs="0" name="MaxPollPeriod" type="xs:int"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="poll_terminated_sessionsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="SessionInfo" type="ns0:SessionInfo"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="get_properties">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                <xs:element minOccurs="0" name="Filter" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="get_propertiesResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="ns0:Property"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="join_and_manage_properties">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                <xs:element minOccurs="0" name="Timeout" type="xs:int"/>
+                <xs:element minOccurs="0" name="NotifyAddr" type="xs:string"/>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="LocalProperty" type="ns0:Property"/>
+                <xs:element minOccurs="0" name="Filter" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="join_and_manage_propertiesResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="ns0:Property"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="sync_back">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="sync_backResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="ns0:Property"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="sync_get">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                <xs:element minOccurs="0" name="Create" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="sync_getResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="ns0:Property"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="sync_write">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="ns0:Property"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="sync_upgrade">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                <xs:element minOccurs="0" name="Regenerate" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="sync_upgradeResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="ns0:Property"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="create">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Timeout" type="xs:int"/>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="Properties" type="ns0:Property"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="createResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Timeout" type="xs:int"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="join">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                <xs:element minOccurs="0" name="Timeout" type="xs:int"/>
+                <xs:element minOccurs="0" name="notifyAddr" type="xs:string"/>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="LocalProperty" type="ns0:Property"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="joinResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Timeout" type="xs:int"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="prepare_conference">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="ReceiverList" type="ns0:Receiver"/>
+                <xs:element minOccurs="0" name="Latency" type="xs:int"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="prepare_conferenceResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Handle" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="prepare_handover">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                <xs:element minOccurs="0" name="Receiver" type="ns0:Receiver"/>
+                <xs:element minOccurs="0" name="Latency" type="xs:int"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="prepare_handoverResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Handle" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="get_all">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Property" type="ns0:Property"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="get_allResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="SessionIdList" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="kill">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="kill_all">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Property" type="ns0:Property"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="leave">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="set_properties">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="ns0:Property"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="sync">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="ns0:Property"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="sync_kill">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                <xs:element minOccurs="0" name="Session" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="InvalidSession">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="1" name="InvalidSession" type="ns0:InvalidSession"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="InvalidMember">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="1" name="InvalidMember" type="ns0:InvalidMember"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="NoPermission">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="1" name="NoPermission" type="ns0:NoPermission"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Internal">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="1" name="Internal" type="ns0:Internal"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

@@ -1,0 +1,1900 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+3.12.2009: Eliminated nillable attribute for strings because of JAXBElement<String> generation problem with JAXWS/JAXB 
+3.12.2009: Renamed namespace ax23 to tns (target name space)
+NOTE: http://soap.esauth.nevis.ch is not a valid web location, we should rename it to 
+      http://www.nevis.ch/nevisauth/wsdl/ and http://www.nevis.ch/nevisauth/xsd/ respectively
+      and add some kind of versioning.
+-->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+                  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  xmlns:ns0="http://soap.esauth.nevis.ch/xsd"
+                  xmlns:ns1="http://soap.esauth.nevis.ch"
+                  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+                  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  targetNamespace="http://soap.esauth.nevis.ch">
+
+    <wsdl:types>
+
+        <xs:schema xmlns:tns="http://soap.esauth.nevis.ch/xsd"
+                   targetNamespace="http://soap.esauth.nevis.ch/xsd"
+                   attributeFormDefault="qualified"
+                   elementFormDefault="qualified">
+
+            <xs:complexType name="AuthLoginContext">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="props" type="tns:Property"/>
+                    <xs:element minOccurs="0" name="clientid" type="xs:string"/>
+                    <xs:element minOccurs="0" name="domain" type="xs:string"/>
+                    <xs:element minOccurs="0" name="entryid" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resource" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="requiredRoles" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="AuthResultContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="guiDesc" type="tns:GuiDesc"/>
+                    <xs:element minOccurs="0" name="status" type="tns:Status"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="props" type="tns:Property"/>
+                    <xs:element minOccurs="0" name="newResource" type="xs:string"/>
+                    <xs:element minOccurs="0" name="secToken" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="actualRoles" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="GuiDesc">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="props" type="tns:Property"/>
+                    <xs:element minOccurs="0" name="contentType" type="xs:string"/>
+                    <xs:element minOccurs="0" name="data" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <!-- 
+            28.6.2010/martin: This would be the correct enumerator, but we cannot use it directly, because
+            clients expect <status><AUTH_CONTINUE/></status> and not <status>AUTH_CONTINUE</status>.
+            As JAXWS has problems with this self-referecing construct (having a value of null and therefore
+            never transmited over the wire), we treat it as a set with one element and attach the enum index as a value.
+            -->
+            <!--
+ 			<xs:simpleType name="Status">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="AUTH_CONTINUE" />
+					<xs:enumeration value="AUTH_DONE" />
+					<xs:enumeration value="AUTH_ERROR" />
+					<xs:enumeration value="AUTH_REDIRECT" />
+				</xs:restriction>
+			</xs:simpleType>
+            -->
+            <xs:simpleType name="StatusEnumValue">
+                <xs:restriction base="xs:int"/>
+            </xs:simpleType>
+            <xs:complexType name="Status">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="AUTH_CONTINUE" type="tns:StatusEnumValue"/>
+                    <xs:element minOccurs="0" name="AUTH_DONE" type="tns:StatusEnumValue"/>
+                    <xs:element minOccurs="0" name="AUTH_ERROR" type="tns:StatusEnumValue"/>
+                    <xs:element minOccurs="0" name="AUTH_REDIRECT" type="tns:StatusEnumValue"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="AuthChangeContext">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="props" type="tns:Property"/>
+                    <xs:element minOccurs="0" name="resource" type="xs:string"/>
+                    <xs:element minOccurs="0" name="secToken" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="requiredRoles" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="SessionInfo">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="props" type="tns:Property"/>
+                    <xs:element minOccurs="0" name="clientId" type="xs:string"/>
+                    <xs:element minOccurs="0" name="globalSessId" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Receiver">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="user" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="roles" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidMember">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType name="InvalidSession">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="status" type="xs:int"/>
+                    <xs:element minOccurs="0" name="message" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="NoPermission">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType name="Internal">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="msg" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Property">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="name" type="xs:string"/>
+                    <xs:element minOccurs="0" name="value" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+
+
+        <xs:schema xmlns:ns="http://soap.esauth.nevis.ch"
+                   targetNamespace="http://soap.esauth.nevis.ch"
+                   attributeFormDefault="qualified"
+                   elementFormDefault="qualified">
+
+            <xs:import namespace="http://soap.esauth.nevis.ch/xsd"/>
+
+            <xs:element name="vote">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="voteResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Boolean" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="authenticate">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="InArgs" type="ns0:Property"/>
+                        <xs:element minOccurs="0" name="AuthLoginContext" type="ns0:AuthLoginContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="authenticateResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="AuthResultContext" type="ns0:AuthResultContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="refresh">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Sectoken" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Resource" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="refreshResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="AuthResultContext" type="ns0:AuthResultContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="stepdown">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="AuthChangeContext" type="ns0:AuthChangeContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="stepdownResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="AuthResultContext" type="ns0:AuthResultContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="stepup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="InArgs" type="ns0:Property"/>
+                        <xs:element minOccurs="0" name="AuthChangeContext" type="ns0:AuthChangeContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="stepupResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="AuthResultContext" type="ns0:AuthResultContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="unlock">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="InArgs" type="ns0:Property"/>
+                        <xs:element minOccurs="0" name="AuthChangeContext" type="ns0:AuthChangeContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="unlockResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="AuthResultContext" type="ns0:AuthResultContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="logout">
+                <xs:complexType>
+                    <xs:sequence>
+                        <!-- leave for backward compatibility -->
+                        <xs:element minOccurs="0" name="Sectoken" type="xs:string"/>
+                        <!-- new to allow full context propagation by proxy -->
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="InArgs" type="ns0:Property"/>
+                        <xs:element minOccurs="0" name="AuthChangeContext" type="ns0:AuthChangeContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="logoutResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="GuiDesc" type="ns0:GuiDesc"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="poll_terminated_sessions">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="MinPollPeriod" type="xs:int"/>
+                        <xs:element minOccurs="0" name="MaxPollPeriod" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="poll_terminated_sessionsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="SessionInfo" type="ns0:SessionInfo"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="get_properties">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Filter" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="get_propertiesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="ns0:Property"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="join_and_manage_properties">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Timeout" type="xs:int"/>
+                        <xs:element minOccurs="0" name="NotifyAddr" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="LocalProperty" type="ns0:Property"/>
+                        <xs:element minOccurs="0" name="Filter" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="join_and_manage_propertiesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="ns0:Property"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="sync_back">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="sync_backResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="ns0:Property"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="sync_get">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Create" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="sync_getResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="ns0:Property"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="sync_write">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="ns0:Property"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="sync_upgrade">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Regenerate" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="sync_upgradeResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="ns0:Property"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="create">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Timeout" type="xs:int"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="Properties" type="ns0:Property"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="createResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Timeout" type="xs:int"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="join">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Timeout" type="xs:int"/>
+                        <xs:element minOccurs="0" name="notifyAddr" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="LocalProperty" type="ns0:Property"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="joinResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Timeout" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="prepare_conference">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="ReceiverList" type="ns0:Receiver"/>
+                        <xs:element minOccurs="0" name="Latency" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="prepare_conferenceResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Handle" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="prepare_handover">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Receiver" type="ns0:Receiver"/>
+                        <xs:element minOccurs="0" name="Latency" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="prepare_handoverResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Handle" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="get_all">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Property" type="ns0:Property"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="get_allResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="SessionIdList" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="kill">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="kill_all">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Property" type="ns0:Property"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="leave">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="set_properties">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="ns0:Property"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="sync">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="Property" type="ns0:Property"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="sync_kill">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Actor" type="xs:string"/>
+                        <xs:element minOccurs="0" name="Session" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="InvalidSession">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="1" name="InvalidSession" type="ns0:InvalidSession"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="InvalidMember">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="1" name="InvalidMember" type="ns0:InvalidMember"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="NoPermission">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="1" name="NoPermission" type="ns0:NoPermission"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Internal">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="1" name="Internal" type="ns0:Internal"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+
+    <wsdl:message name="leaveRequest">
+        <wsdl:part name="parameters" element="ns1:leave"/>
+    </wsdl:message>
+    <wsdl:message name="leaveResponse"/>
+    <wsdl:message name="InvalidSession">
+        <wsdl:part name="parameters" element="ns1:InvalidSession"/>
+    </wsdl:message>
+    <wsdl:message name="InvalidMember">
+        <wsdl:part name="parameters" element="ns1:InvalidMember"/>
+    </wsdl:message>
+    <wsdl:message name="NoPermission">
+        <wsdl:part name="parameters" element="ns1:NoPermission"/>
+    </wsdl:message>
+    <wsdl:message name="Internal">
+        <wsdl:part name="parameters" element="ns1:Internal"/>
+    </wsdl:message>
+    <wsdl:message name="prepare_handoverRequest">
+        <wsdl:part name="parameters" element="ns1:prepare_handover"/>
+    </wsdl:message>
+    <wsdl:message name="prepare_handoverResponse">
+        <wsdl:part name="parameters" element="ns1:prepare_handoverResponse"/>
+    </wsdl:message>
+    <wsdl:message name="voteRequest">
+        <wsdl:part name="parameters" element="ns1:vote"/>
+    </wsdl:message>
+    <wsdl:message name="voteResponse">
+        <wsdl:part name="parameters" element="ns1:voteResponse"/>
+    </wsdl:message>
+    <wsdl:message name="killRequest">
+        <wsdl:part name="parameters" element="ns1:kill"/>
+    </wsdl:message>
+    <wsdl:message name="killResponse"/>
+    <wsdl:message name="get_propertiesRequest">
+        <wsdl:part name="parameters" element="ns1:get_properties"/>
+    </wsdl:message>
+    <wsdl:message name="get_propertiesResponse">
+        <wsdl:part name="parameters" element="ns1:get_propertiesResponse"/>
+    </wsdl:message>
+    <wsdl:message name="kill_allRequest">
+        <wsdl:part name="parameters" element="ns1:kill_all"/>
+    </wsdl:message>
+    <wsdl:message name="kill_allResponse"/>
+    <wsdl:message name="get_allRequest">
+        <wsdl:part name="parameters" element="ns1:get_all"/>
+    </wsdl:message>
+    <wsdl:message name="get_allResponse">
+        <wsdl:part name="parameters" element="ns1:get_allResponse"/>
+    </wsdl:message>
+    <wsdl:message name="stepdownRequest">
+        <wsdl:part name="parameters" element="ns1:stepdown"/>
+    </wsdl:message>
+    <wsdl:message name="stepdownResponse">
+        <wsdl:part name="parameters" element="ns1:stepdownResponse"/>
+    </wsdl:message>
+    <wsdl:message name="authenticateRequest">
+        <wsdl:part name="parameters" element="ns1:authenticate"/>
+    </wsdl:message>
+    <wsdl:message name="authenticateResponse">
+        <wsdl:part name="parameters" element="ns1:authenticateResponse"/>
+    </wsdl:message>
+    <wsdl:message name="stepupRequest">
+        <wsdl:part name="parameters" element="ns1:stepup"/>
+    </wsdl:message>
+    <wsdl:message name="stepupResponse">
+        <wsdl:part name="parameters" element="ns1:stepupResponse"/>
+    </wsdl:message>
+    <wsdl:message name="syncRequest">
+        <wsdl:part name="parameters" element="ns1:sync"/>
+    </wsdl:message>
+    <wsdl:message name="syncResponse"/>
+    <wsdl:message name="join_and_manage_propertiesRequest">
+        <wsdl:part name="parameters" element="ns1:join_and_manage_properties"/>
+    </wsdl:message>
+    <wsdl:message name="join_and_manage_propertiesResponse">
+        <wsdl:part name="parameters" element="ns1:join_and_manage_propertiesResponse"/>
+    </wsdl:message>
+    <wsdl:message name="sync_backRequest">
+        <wsdl:part name="parameters" element="ns1:sync_back"/>
+    </wsdl:message>
+    <wsdl:message name="sync_backResponse">
+        <wsdl:part name="parameters" element="ns1:sync_backResponse"/>
+    </wsdl:message>
+    <wsdl:message name="sync_getRequest">
+        <wsdl:part name="parameters" element="ns1:sync_get"/>
+    </wsdl:message>
+    <wsdl:message name="sync_getResponse">
+        <wsdl:part name="parameters" element="ns1:sync_getResponse"/>
+    </wsdl:message>
+    <wsdl:message name="sync_writeRequest">
+        <wsdl:part name="parameters" element="ns1:sync_write"/>
+    </wsdl:message>
+    <wsdl:message name="sync_writeResponse"/>
+    <wsdl:message name="sync_upgradeRequest">
+        <wsdl:part name="parameters" element="ns1:sync_upgrade"/>
+    </wsdl:message>
+    <wsdl:message name="sync_upgradeResponse">
+        <wsdl:part name="parameters" element="ns1:sync_upgradeResponse"/>
+    </wsdl:message>
+    <wsdl:message name="unlockRequest">
+        <wsdl:part name="parameters" element="ns1:unlock"/>
+    </wsdl:message>
+    <wsdl:message name="unlockResponse">
+        <wsdl:part name="parameters" element="ns1:unlockResponse"/>
+    </wsdl:message>
+    <wsdl:message name="set_propertiesRequest">
+        <wsdl:part name="parameters" element="ns1:set_properties"/>
+    </wsdl:message>
+    <wsdl:message name="set_propertiesResponse"/>
+    <wsdl:message name="poll_terminated_sessionsRequest">
+        <wsdl:part name="parameters" element="ns1:poll_terminated_sessions"/>
+    </wsdl:message>
+    <wsdl:message name="poll_terminated_sessionsResponse">
+        <wsdl:part name="parameters" element="ns1:poll_terminated_sessionsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="createRequest">
+        <wsdl:part name="parameters" element="ns1:create"/>
+    </wsdl:message>
+    <wsdl:message name="createResponse">
+        <wsdl:part name="parameters" element="ns1:createResponse"/>
+    </wsdl:message>
+    <wsdl:message name="joinRequest">
+        <wsdl:part name="parameters" element="ns1:join"/>
+    </wsdl:message>
+    <wsdl:message name="joinResponse">
+        <wsdl:part name="parameters" element="ns1:joinResponse"/>
+    </wsdl:message>
+    <wsdl:message name="logoutRequest">
+        <wsdl:part name="parameters" element="ns1:logout"/>
+    </wsdl:message>
+    <wsdl:message name="logoutResponse">
+        <wsdl:part name="parameters" element="ns1:logoutResponse"/>
+    </wsdl:message>
+    <wsdl:message name="sync_killRequest">
+        <wsdl:part name="parameters" element="ns1:sync_kill"/>
+    </wsdl:message>
+    <wsdl:message name="sync_killResponse"/>
+    <wsdl:message name="refreshRequest">
+        <wsdl:part name="parameters" element="ns1:refresh"/>
+    </wsdl:message>
+    <wsdl:message name="refreshResponse">
+        <wsdl:part name="parameters" element="ns1:refreshResponse"/>
+    </wsdl:message>
+    <wsdl:message name="prepare_conferenceRequest">
+        <wsdl:part name="parameters" element="ns1:prepare_conference"/>
+    </wsdl:message>
+    <wsdl:message name="prepare_conferenceResponse">
+        <wsdl:part name="parameters" element="ns1:prepare_conferenceResponse"/>
+    </wsdl:message>
+
+    <wsdl:portType name="AuthenticationManagerOperationsPortType">
+        <wsdl:operation name="leave">
+            <wsdl:input message="ns1:leaveRequest" wsaw:Action="urn:leave"/>
+            <wsdl:output message="ns1:leaveResponse" wsaw:Action="urn:leaveResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession" wsaw:Action="urn:leaveInvalidSession"/>
+            <wsdl:fault message="ns1:InvalidMember" name="InvalidMember" wsaw:Action="urn:leaveInvalidMember"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission" wsaw:Action="urn:leaveNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:leaveInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="prepare_handover">
+            <wsdl:input message="ns1:prepare_handoverRequest" wsaw:Action="urn:prepare_handover"/>
+            <wsdl:output message="ns1:prepare_handoverResponse" wsaw:Action="urn:prepare_handoverResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession"
+                        wsaw:Action="urn:prepare_handoverInvalidSession"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission" wsaw:Action="urn:prepare_handoverNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:prepare_handoverInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="vote">
+            <wsdl:input message="ns1:voteRequest" wsaw:Action="urn:vote"/>
+            <wsdl:output message="ns1:voteResponse" wsaw:Action="urn:voteResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession" wsaw:Action="urn:voteInvalidSession"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission" wsaw:Action="urn:voteNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:voteInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="kill">
+            <wsdl:input message="ns1:killRequest" wsaw:Action="urn:kill"/>
+            <wsdl:output message="ns1:killResponse" wsaw:Action="urn:killResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession" wsaw:Action="urn:killInvalidSession"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission" wsaw:Action="urn:killNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:killInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="get_properties">
+            <wsdl:input message="ns1:get_propertiesRequest" wsaw:Action="urn:get_properties"/>
+            <wsdl:output message="ns1:get_propertiesResponse" wsaw:Action="urn:get_propertiesResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession"
+                        wsaw:Action="urn:get_propertiesInvalidSession"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission" wsaw:Action="urn:get_propertiesNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:get_propertiesInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="kill_all">
+            <wsdl:input message="ns1:kill_allRequest" wsaw:Action="urn:kill_all"/>
+            <wsdl:output message="ns1:kill_allResponse" wsaw:Action="urn:kill_allResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession" wsaw:Action="urn:kill_allInvalidSession"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission" wsaw:Action="urn:kill_allNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:kill_allInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="get_all">
+            <wsdl:input message="ns1:get_allRequest" wsaw:Action="urn:get_all"/>
+            <wsdl:output message="ns1:get_allResponse" wsaw:Action="urn:get_allResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession" wsaw:Action="urn:get_allInvalidSession"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission" wsaw:Action="urn:get_allNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:get_allInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="stepdown">
+            <wsdl:input message="ns1:stepdownRequest" wsaw:Action="urn:stepdown"/>
+            <wsdl:output message="ns1:stepdownResponse" wsaw:Action="urn:stepdownResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession" wsaw:Action="urn:stepdownInvalidSession"/>
+        </wsdl:operation>
+        <wsdl:operation name="authenticate">
+            <wsdl:input message="ns1:authenticateRequest" wsaw:Action="urn:authenticate"/>
+            <wsdl:output message="ns1:authenticateResponse" wsaw:Action="urn:authenticateResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="stepup">
+            <wsdl:input message="ns1:stepupRequest" wsaw:Action="urn:stepup"/>
+            <wsdl:output message="ns1:stepupResponse" wsaw:Action="urn:stepupResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession" wsaw:Action="urn:stepupInvalidSession"/>
+        </wsdl:operation>
+        <wsdl:operation name="sync">
+            <wsdl:input message="ns1:syncRequest" wsaw:Action="urn:sync"/>
+            <wsdl:output message="ns1:syncResponse" wsaw:Action="urn:syncResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession" wsaw:Action="urn:syncInvalidSession"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission" wsaw:Action="urn:syncNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:syncInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="join_and_manage_properties">
+            <wsdl:input message="ns1:join_and_manage_propertiesRequest" wsaw:Action="urn:join_and_manage_properties"/>
+            <wsdl:output message="ns1:join_and_manage_propertiesResponse"
+                         wsaw:Action="urn:join_and_manage_propertiesResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession"
+                        wsaw:Action="urn:join_and_manage_propertiesInvalidSession"/>
+            <wsdl:fault message="ns1:InvalidMember" name="InvalidMember"
+                        wsaw:Action="urn:join_and_manage_propertiesInvalidMember"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission"
+                        wsaw:Action="urn:join_and_manage_propertiesNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:join_and_manage_propertiesInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="sync_back">
+            <wsdl:input message="ns1:sync_backRequest" wsaw:Action="urn:sync_back"/>
+            <wsdl:output message="ns1:sync_backResponse" wsaw:Action="urn:sync_backResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession" wsaw:Action="urn:sync_backInvalidSession"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission" wsaw:Action="urn:sync_backNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:sync_backInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="sync_get">
+            <wsdl:input message="ns1:sync_getRequest" wsaw:Action="urn:sync_get"/>
+            <wsdl:output message="ns1:sync_getResponse" wsaw:Action="urn:sync_getResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession" wsaw:Action="urn:sync_getInvalidSession"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission" wsaw:Action="urn:sync_getNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:sync_getInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="sync_write">
+            <wsdl:input message="ns1:sync_writeRequest" wsaw:Action="urn:sync_write"/>
+            <wsdl:output message="ns1:sync_writeResponse" wsaw:Action="urn:sync_writeResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession" wsaw:Action="urn:sync_writeInvalidSession"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission" wsaw:Action="urn:sync_writeNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:sync_writeInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="sync_upgrade">
+            <wsdl:input message="ns1:sync_upgradeRequest" wsaw:Action="urn:sync_upgrade"/>
+            <wsdl:output message="ns1:sync_upgradeResponse" wsaw:Action="urn:sync_upgradeResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession"
+                        wsaw:Action="urn:sync_upgradeInvalidSession"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission" wsaw:Action="urn:sync_upgradeNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:sync_upgradeInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="unlock">
+            <wsdl:input message="ns1:unlockRequest" wsaw:Action="urn:unlock"/>
+            <wsdl:output message="ns1:unlockResponse" wsaw:Action="urn:unlockResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession" wsaw:Action="urn:unlockInvalidSession"/>
+        </wsdl:operation>
+        <wsdl:operation name="set_properties">
+            <wsdl:input message="ns1:set_propertiesRequest" wsaw:Action="urn:set_properties"/>
+            <wsdl:output message="ns1:set_propertiesResponse" wsaw:Action="urn:set_propertiesResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession"
+                        wsaw:Action="urn:set_propertiesInvalidSession"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission" wsaw:Action="urn:set_propertiesNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:set_propertiesInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="poll_terminated_sessions">
+            <wsdl:input message="ns1:poll_terminated_sessionsRequest" wsaw:Action="urn:poll_terminated_sessions"/>
+            <wsdl:output message="ns1:poll_terminated_sessionsResponse"
+                         wsaw:Action="urn:poll_terminated_sessionsResponse"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission"
+                        wsaw:Action="urn:poll_terminated_sessionsNoPermission"/>
+        </wsdl:operation>
+        <wsdl:operation name="join">
+            <wsdl:input message="ns1:joinRequest" wsaw:Action="urn:join"/>
+            <wsdl:output message="ns1:joinResponse" wsaw:Action="urn:joinResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession" wsaw:Action="urn:joinInvalidSession"/>
+            <wsdl:fault message="ns1:InvalidMember" name="InvalidMember" wsaw:Action="urn:joinInvalidMember"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission" wsaw:Action="urn:joinNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:joinInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="create">
+            <wsdl:input message="ns1:createRequest" wsaw:Action="urn:create"/>
+            <wsdl:output message="ns1:createResponse" wsaw:Action="urn:createResponse"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission" wsaw:Action="urn:createNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:createInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="logout">
+            <wsdl:input message="ns1:logoutRequest" wsaw:Action="urn:logout"/>
+            <wsdl:output message="ns1:logoutResponse" wsaw:Action="urn:logoutResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession" wsaw:Action="urn:logoutInvalidSession"/>
+        </wsdl:operation>
+        <wsdl:operation name="sync_kill">
+            <wsdl:input message="ns1:sync_killRequest" wsaw:Action="urn:sync_kill"/>
+            <wsdl:output message="ns1:sync_killResponse" wsaw:Action="urn:sync_killResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession" wsaw:Action="urn:sync_killInvalidSession"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission" wsaw:Action="urn:sync_killNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:sync_killInternal"/>
+        </wsdl:operation>
+        <wsdl:operation name="refresh">
+            <wsdl:input message="ns1:refreshRequest" wsaw:Action="urn:refresh"/>
+            <wsdl:output message="ns1:refreshResponse" wsaw:Action="urn:refreshResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession" wsaw:Action="urn:refreshInvalidSession"/>
+        </wsdl:operation>
+        <wsdl:operation name="prepare_conference">
+            <wsdl:input message="ns1:prepare_conferenceRequest" wsaw:Action="urn:prepare_conference"/>
+            <wsdl:output message="ns1:prepare_conferenceResponse" wsaw:Action="urn:prepare_conferenceResponse"/>
+            <wsdl:fault message="ns1:InvalidSession" name="InvalidSession"
+                        wsaw:Action="urn:prepare_conferenceInvalidSession"/>
+            <wsdl:fault message="ns1:NoPermission" name="NoPermission"
+                        wsaw:Action="urn:prepare_conferenceNoPermission"/>
+            <wsdl:fault message="ns1:Internal" name="Internal" wsaw:Action="urn:prepare_conferenceInternal"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="AuthenticationManagerOperationsSOAP11Binding"
+                  type="ns1:AuthenticationManagerOperationsPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="leave">
+            <soap:operation soapAction="urn:leave" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="InvalidMember">
+                <soap:fault use="literal" name="InvalidMember"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="prepare_handover">
+            <soap:operation soapAction="urn:prepare_handover" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="vote">
+            <soap:operation soapAction="urn:vote" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="kill">
+            <soap:operation soapAction="urn:kill" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="get_properties">
+            <soap:operation soapAction="urn:get_properties" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="kill_all">
+            <soap:operation soapAction="urn:kill_all" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="get_all">
+            <soap:operation soapAction="urn:get_all" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="stepdown">
+            <soap:operation soapAction="urn:stepdown" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="authenticate">
+            <soap:operation soapAction="urn:authenticate" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="stepup">
+            <soap:operation soapAction="urn:stepup" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="sync">
+            <soap:operation soapAction="urn:sync" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="join_and_manage_properties">
+            <soap:operation soapAction="urn:join_and_manage_properties" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="InvalidMember">
+                <soap:fault use="literal" name="InvalidMember"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="sync_back">
+            <soap:operation soapAction="urn:sync_back" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="sync_get">
+            <soap:operation soapAction="urn:sync_get" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="sync_write">
+            <soap:operation soapAction="urn:sync_write" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="sync_upgrade">
+            <soap:operation soapAction="urn:sync_upgrade" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="unlock">
+            <soap:operation soapAction="urn:unlock" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="set_properties">
+            <soap:operation soapAction="urn:set_properties" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="poll_terminated_sessions">
+            <soap:operation soapAction="urn:poll_terminated_sessions" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="join">
+            <soap:operation soapAction="urn:join" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="InvalidMember">
+                <soap:fault use="literal" name="InvalidMember"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="create">
+            <soap:operation soapAction="urn:create" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="logout">
+            <soap:operation soapAction="urn:logout" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="sync_kill">
+            <soap:operation soapAction="urn:sync_kill" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="refresh">
+            <soap:operation soapAction="urn:refresh" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="prepare_conference">
+            <soap:operation soapAction="urn:prepare_conference" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:binding name="AuthenticationManagerOperationsSOAP12Binding"
+                  type="ns1:AuthenticationManagerOperationsPortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="leave">
+            <soap12:operation soapAction="urn:leave" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="InvalidMember">
+                <soap12:fault use="literal" name="InvalidMember"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="prepare_handover">
+            <soap12:operation soapAction="urn:prepare_handover" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="vote">
+            <soap12:operation soapAction="urn:vote" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="kill">
+            <soap12:operation soapAction="urn:kill" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="get_properties">
+            <soap12:operation soapAction="urn:get_properties" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="kill_all">
+            <soap12:operation soapAction="urn:kill_all" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="get_all">
+            <soap12:operation soapAction="urn:get_all" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="stepdown">
+            <soap12:operation soapAction="urn:stepdown" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="authenticate">
+            <soap12:operation soapAction="urn:authenticate" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="stepup">
+            <soap12:operation soapAction="urn:stepup" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="sync">
+            <soap12:operation soapAction="urn:sync" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="join_and_manage_properties">
+            <soap12:operation soapAction="urn:join_and_manage_properties" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="InvalidMember">
+                <soap12:fault use="literal" name="InvalidMember"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="sync_back">
+            <soap12:operation soapAction="urn:sync_back" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="sync_get">
+            <soap12:operation soapAction="urn:sync_get" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="sync_write">
+            <soap12:operation soapAction="urn:sync_write" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="sync_upgrade">
+            <soap12:operation soapAction="urn:sync_upgrade" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="unlock">
+            <soap12:operation soapAction="urn:unlock" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="set_properties">
+            <soap12:operation soapAction="urn:set_properties" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="poll_terminated_sessions">
+            <soap12:operation soapAction="urn:poll_terminated_sessions" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="join">
+            <soap12:operation soapAction="urn:join" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="InvalidMember">
+                <soap12:fault use="literal" name="InvalidMember"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="create">
+            <soap12:operation soapAction="urn:create" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="logout">
+            <soap12:operation soapAction="urn:logout" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="sync_kill">
+            <soap12:operation soapAction="urn:sync_kill" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="refresh">
+            <soap12:operation soapAction="urn:refresh" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="prepare_conference">
+            <soap12:operation soapAction="urn:prepare_conference" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InvalidSession">
+                <soap12:fault use="literal" name="InvalidSession"/>
+            </wsdl:fault>
+            <wsdl:fault name="NoPermission">
+                <soap12:fault use="literal" name="NoPermission"/>
+            </wsdl:fault>
+            <wsdl:fault name="Internal">
+                <soap12:fault use="literal" name="Internal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:binding name="AuthenticationManagerOperationsHttpBinding" type="ns1:AuthenticationManagerOperationsPortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="leave">
+            <http:operation location="AuthenticationManagerOperations/leave"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="leave"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="prepare_handover">
+            <http:operation location="AuthenticationManagerOperations/prepare_handover"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="prepare_handover"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="prepare_handover"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="vote">
+            <http:operation location="AuthenticationManagerOperations/vote"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="vote"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="vote"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="kill">
+            <http:operation location="AuthenticationManagerOperations/kill"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="kill"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="get_properties">
+            <http:operation location="AuthenticationManagerOperations/get_properties"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="get_properties"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="get_properties"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="kill_all">
+            <http:operation location="AuthenticationManagerOperations/kill_all"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="kill_all"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="get_all">
+            <http:operation location="AuthenticationManagerOperations/get_all"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="get_all"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="get_all"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="stepdown">
+            <http:operation location="AuthenticationManagerOperations/stepdown"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="stepdown"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="stepdown"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="authenticate">
+            <http:operation location="AuthenticationManagerOperations/authenticate"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="authenticate"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="authenticate"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="stepup">
+            <http:operation location="AuthenticationManagerOperations/stepup"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="stepup"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="stepup"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="sync">
+            <http:operation location="AuthenticationManagerOperations/sync"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="sync"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="join_and_manage_properties">
+            <http:operation location="AuthenticationManagerOperations/join_and_manage_properties"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="join_and_manage_properties"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="join_and_manage_properties"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="sync_back">
+            <http:operation location="AuthenticationManagerOperations/sync_back"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="sync_back"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="sync_back"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="sync_get">
+            <http:operation location="AuthenticationManagerOperations/sync_get"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="sync_get"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="sync_get"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="sync_write">
+            <http:operation location="AuthenticationManagerOperations/sync_write"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="sync_write"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="sync_write"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="sync_upgrade">
+            <http:operation location="AuthenticationManagerOperations/sync_upgrade"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="sync_upgrade"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="sync_upgrade"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="unlock">
+            <http:operation location="AuthenticationManagerOperations/unlock"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="unlock"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="unlock"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="set_properties">
+            <http:operation location="AuthenticationManagerOperations/set_properties"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="set_properties"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="poll_terminated_sessions">
+            <http:operation location="AuthenticationManagerOperations/poll_terminated_sessions"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="poll_terminated_sessions"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="poll_terminated_sessions"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="join">
+            <http:operation location="AuthenticationManagerOperations/join"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="join"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="join"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="create">
+            <http:operation location="AuthenticationManagerOperations/create"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="create"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="create"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="logout">
+            <http:operation location="AuthenticationManagerOperations/logout"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="logout"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="logout"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="sync_kill">
+            <http:operation location="AuthenticationManagerOperations/sync_kill"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="sync_kill"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="refresh">
+            <http:operation location="AuthenticationManagerOperations/refresh"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="refresh"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="refresh"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="prepare_conference">
+            <http:operation location="AuthenticationManagerOperations/prepare_conference"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="prepare_conference"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="prepare_conference"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="AuthenticationManagerOperations">
+        <wsdl:port name="AuthenticationManagerOperationsSOAP11port_http"
+                   binding="ns1:AuthenticationManagerOperationsSOAP11Binding">
+            <soap:address location="http://localhost:8080/nevisauth/services/AuthenticationManagerOperations"/>
+        </wsdl:port>
+        <wsdl:port name="AuthenticationManagerOperationsSOAP12port_http"
+                   binding="ns1:AuthenticationManagerOperationsSOAP12Binding">
+            <soap12:address location="http://localhost:8080/nevisauth/services/AuthenticationManagerOperations"/>
+        </wsdl:port>
+        <wsdl:port name="AuthenticationManagerOperationsHttpport"
+                   binding="ns1:AuthenticationManagerOperationsHttpBinding">
+            <soap:address location="http://localhost:8080/nevisauth/services/AuthenticationManagerOperations"/>
+        </wsdl:port>
+    </wsdl:service>
+
+</wsdl:definitions>
