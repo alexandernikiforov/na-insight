@@ -4,6 +4,7 @@ import ch.alni.insight.esauth.protocol.*;
 import org.slf4j.Logger;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -19,21 +20,21 @@ public class EsAuthEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "authenticate")
     @ResponsePayload
-    public AuthenticateResponse authenticate(Authenticate authenticateRequest) {
+    public AuthenticateResponse authenticate(@RequestPayload Authenticate authenticateRequest) {
         LOG.info("authenticate {}", authenticateRequest);
         return new AuthenticateResponse();
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "stepup")
     @ResponsePayload
-    public StepupResponse stepUp(Stepup stepUpRequest) {
+    public StepupResponse stepUp(@RequestPayload Stepup stepUpRequest) {
         LOG.info("stepUp {}", stepUpRequest);
         return new StepupResponse();
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "logout")
     @ResponsePayload
-    public LogoutResponse logout(Logout logoutRequest) {
+    public LogoutResponse logout(@RequestPayload Logout logoutRequest) {
         LOG.info("logout {}", logoutRequest);
         return new LogoutResponse();
     }

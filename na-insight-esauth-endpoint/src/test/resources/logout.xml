@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <logout xmlns="http://soap.esauth.nevis.ch">
+            <Sectoken>&lt;secToken version=&quot;CSSO-1.0&quot;
+                signTime=&quot;20180430120405Z&quot; ttl=&quot;14399&quot;&gt;&lt;attr&gt;&lt;esauthid&gt;as_okaut_adnlt788-vm1.dyn.adnovum.ch&lt;/esauthid&gt;&lt;field
+                name=&quot;loginid&quot;&gt;000001&lt;/field&gt;&lt;field name=&quot;domain&quot;&gt;PF.FIDOREG&lt;/field&gt;&lt;field
+                name=&quot;type&quot;&gt;EUwAR&lt;/field&gt;&lt;userid&gt;E1234567899999000001&lt;/userid&gt;&lt;sessid&gt;ngB0t4PMUNJGKARW9P-LvVIHvfAuCcsjxPzl-kYTOY8&lt;/sessid&gt;&lt;entryid&gt;fido&lt;/entryid&gt;&lt;/attr&gt;&lt;signature
+                alg=&quot;SHA1withRSA&quot; fingerPrint=&quot;31:65:2F:B0:98:DC:DA:AE:EC:C2:9D:F1:48:F8:AF:71&quot;&gt;Ws2+HAe1jsaiOJWpjQET+lIgCrRofWrt2AuFH+cmZnhnofz2RzDLjJjfETTtsIEY5SJfB4V/9bYriI08upixVDzOyGeQC1uhe75lH0q81LvHkSVILB7u8yaNqjqEMDvw73LPso3RHP+dAxDq/mJChgDkVM0eTu99VTB2ueg3rXKOMSiBwWNY/eGRYpW9hrrQdougZRd16AcMx/qzD+VQBwRB4L6XrCW7/fL0PLjqZKbb3QOa2od5W1XS1lGwM+i2HZGo79Nfy8XGFG8pzzloOn9LX9Lfkhr3TJ8KtactzjNxAaVdfwEk9Vv/NyLyi2qPPtOKBsGfZqbOheub86N+KA==&lt;/signature&gt;&lt;/secToken&gt;
+            </Sectoken>
+            <InArgs>
+                <name xmlns="http://soap.esauth.nevis.ch/xsd">logout</name>
+                <value xmlns="http://soap.esauth.nevis.ch/xsd"/>
+            </InArgs>
+
+            <AuthChangeContext>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.SSLCipher</name>
+                    <value>ECDHE-RSA-AES256-GCM-SHA384</value>
+                </props>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.SSLProtocol</name>
+                    <value>TLSv1.2</value>
+                </props>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.ClientIP</name>
+                    <value>192.168.76.80
+                    </value>
+                </props>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.actualURL</name>
+                    <value>https://adnlt788-vm1.dyn.adnovum.ch:943/fido/auth</value>
+                </props>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.HttpHeader.Accept-Charset</name>
+                    <value>ISO-8859-1,utf-8;q=0.7,*;q=0.7</value>
+                </props>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.HttpHeader.User-Agent</name>
+                    <value>httest</value>
+                </props>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.HttpHeader.Accept-Language</name>
+                    <value>en-us,en;q=0.5
+                    </value>
+                </props>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.HttpHeader.UNIQUE_ID</name>
+                    <value>c0a84c50-032e-a8c0504c-163167045f3-0000000d
+                    </value>
+                </props>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.HttpHeader.CLIENT_SSL_ID</name>
+                    <value>2EA897CE2BE0B18C782F13BEFF62B16125C85E197E7C99007A007621D356DEAC
+                    </value>
+                </props>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.HttpHeader.X-HTTPS</name>
+                    <value>on</value>
+                </props>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.HttpHeader.TransferId</name>
+                    <value>15250898467623204</value>
+                </props>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.HttpHeader.Keep-Alive</name>
+                    <value>115</value>
+                </props>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.HttpHeader.Cookie</name>
+                    <value>EFLogin=login</value>
+                </props>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.HttpHeader.Connection</name>
+                    <value>keep-alive</value>
+                </props>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.HttpHeader.Host</name>
+                    <value>adnlt788-vm1.dyn.adnovum.ch:943</value>
+                </props>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.HttpHeader.REMOTE_ADDR</name>
+                    <value>192.168.76.80</value>
+                </props>
+                <props xmlns="http://soap.esauth.nevis.ch/xsd">
+                    <name>connection.HttpHeader.Accept</name>
+                    <value>application/json;q=0.9,*/*;q=0.8</value>
+                </props>
+                <secToken xmlns="http://soap.esauth.nevis.ch/xsd">&lt;secToken version=&quot;CSSO-1.0&quot; signTime=&quot;20180430120405Z&quot;
+                    ttl=&quot;14399&quot;&gt;&lt;attr&gt;&lt;esauthid&gt;as_okaut_adnlt788-vm1.dyn.adnovum.ch&lt;/esauthid&gt;&lt;field
+                    name=&quot;loginid&quot;&gt;000001&lt;/field&gt;&lt;field name=&quot;domain&quot;&gt;PF.FIDOREG&lt;/field&gt;&lt;field
+                    name=&quot;type&quot;&gt;EUwAR&lt;/field&gt;&lt;userid&gt;E1234567899999000001&lt;/userid&gt;&lt;sessid&gt;ngB0t4PMUNJGKARW9P-LvVIHvfAuCcsjxPzl-kYTOY8&lt;/sessid&gt;&lt;entryid&gt;fido&lt;/entryid&gt;&lt;/attr&gt;&lt;signature
+                    alg=&quot;SHA1withRSA&quot; fingerPrint=&quot;31:65:2F:B0:98:DC:DA:AE:EC:C2:9D:F1:48:F8:AF:71&quot;&gt;Ws2+HAe1jsaiOJWpjQET+lIgCrRofWrt2AuFH+cmZnhnofz2RzDLjJjfETTtsIEY5SJfB4V/9bYriI08upixVDzOyGeQC1uhe75lH0q81LvHkSVILB7u8yaNqjqEMDvw73LPso3RHP+dAxDq/mJChgDkVM0eTu99VTB2ueg3rXKOMSiBwWNY/eGRYpW9hrrQdougZRd16AcMx/qzD+VQBwRB4L6XrCW7/fL0PLjqZKbb3QOa2od5W1XS1lGwM+i2HZGo79Nfy8XGFG8pzzloOn9LX9Lfkhr3TJ8KtactzjNxAaVdfwEk9Vv/NyLyi2qPPtOKBsGfZqbOheub86N+KA==&lt;/signature&gt;&lt;/secToken&gt;
+                </secToken>
+                <resource xmlns="http://soap.esauth.nevis.ch/xsd">
+                    https://adnlt788-vm1.dyn.adnovum.ch:943/fido/uaf/1.1/registration
+                </resource>
+            </AuthChangeContext>
+        </logout>
+    </soapenv:Body>
+</soapenv:Envelope>
